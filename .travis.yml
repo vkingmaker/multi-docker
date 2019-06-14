@@ -7,3 +7,16 @@ before_install:
 
 script:
   - docker run vkingmaker/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t vkingmaker/multi-client ./client
+  - docker build -t vkingmaker/multi-nginx ./nginx
+  - docker build -t vkingmaker/multi-server ./server
+  - docker build -t vkingmaker/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push vkingmaker/multi-client
+  - docker push vkingmaker/multi-nginx
+  - docker push vkingmaker/multi-server
+  - docker push vkingmaker/multi-worker
